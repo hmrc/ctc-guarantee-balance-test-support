@@ -1,3 +1,2 @@
 # microservice specific routes
-
-GET        /hello-world             uk.gov.hmrc.ctcguaranteebalancetestsupport.controllers.MicroserviceHelloWorldController.hello
+POST    /balances/:recipient    controllers.TestMessagesController.injectEisResponse(recipient: MessageRecipient)

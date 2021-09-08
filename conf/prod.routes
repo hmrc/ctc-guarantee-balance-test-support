@@ -1,5 +1,4 @@
-# Add all the application routes to the app.routes file
-->         /ctc-guarantee-balance-test-support              app.Routes
-->         /                          health.Routes
+->     /                 app.Routes
+->     /                 health.Routes
 
-GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics
+GET    /admin/metrics    com.kenshoo.play.metrics.MetricsController.metrics
