@@ -19,7 +19,8 @@ package connectors
 import cats.effect.unsafe.implicits.global
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.MessageType
-import models.values.MessageRecipient
+import models.values.BalanceIdRecipient
+import models.values.MessageIdRecipient
 import org.scalatest.concurrent.IntegrationPatience
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
@@ -27,6 +28,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+
+import java.util.UUID
 
 class TraderRouterConnectorSpec
     extends AnyFlatSpec
@@ -41,9 +44,30 @@ class TraderRouterConnectorSpec
   override protected def portConfigKeys: Seq[String] =
     Seq("microservice.services.trader-router.port")
 
-  "TraderRouterConnector" should "forward success message to the trader router" in {
+  "TraderRouterConnector" should "forward success message to the trader router for message ID requests" in {
     val connector = app.injector.instanceOf[TraderRouterConnector]
-    val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+    val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+
+    wireMockServer.stubFor(
+      post(urlEqualTo("/transit-movements-trader-router/messages"))
+        .withHeader("Content-Type", equalTo("application/xml"))
+        .withHeader("X-Message-Recipient", equalTo("MDTP-GUA-22b9899e24ee48e6a18997d1"))
+        .withHeader("X-Message-Type", equalTo("IE037"))
+        .willReturn(aResponse().withStatus(OK))
+        .withRequestBody(equalToXml("<foo></foo>"))
+    )
+
+    val response = connector
+      .injectEisResponse(recipient, MessageType.ResponseQueryOnGuarantees, <foo></foo>)
+      .unsafeToFuture()
+      .futureValue
+
+    response.status shouldBe OK
+  }
+
+  it should "forward success message to the trader router for balance ID requests" in {
+    val connector = app.injector.instanceOf[TraderRouterConnector]
+    val recipient = BalanceIdRecipient(UUID.fromString("22b9899e-24ee-48e6-a189-97d1f45391c4"))
 
     wireMockServer.stubFor(
       post(urlEqualTo("/transit-movements-trader-router/messages"))
@@ -64,7 +88,7 @@ class TraderRouterConnectorSpec
 
   it should "forward functional error message to the trader router" in {
     val connector = app.injector.instanceOf[TraderRouterConnector]
-    val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+    val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
     wireMockServer.stubFor(
       post(urlEqualTo("/transit-movements-trader-router/messages"))
@@ -85,7 +109,7 @@ class TraderRouterConnectorSpec
 
   it should "forward XML error message to the trader router" in {
     val connector = app.injector.instanceOf[TraderRouterConnector]
-    val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+    val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
     wireMockServer.stubFor(
       post(urlEqualTo("/transit-movements-trader-router/messages"))
@@ -106,7 +130,7 @@ class TraderRouterConnectorSpec
 
   it should "pass back client error" in {
     val connector = app.injector.instanceOf[TraderRouterConnector]
-    val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+    val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
     wireMockServer.stubFor(
       post(urlEqualTo("/transit-movements-trader-router/messages"))
@@ -124,7 +148,7 @@ class TraderRouterConnectorSpec
 
   it should "pass back server error" in {
     val connector = app.injector.instanceOf[TraderRouterConnector]
-    val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+    val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
     wireMockServer.stubFor(
       post(urlEqualTo("/transit-movements-trader-router/messages"))

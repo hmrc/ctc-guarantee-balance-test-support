@@ -23,8 +23,9 @@ import models.BalanceRequestSuccess
 import models.SimulatedResponse
 import models.values.CurrencyCode
 import models.values.GuaranteeReference
-import models.values.MessageRecipient
+import models.values.MessageIdRecipient
 import models.values.TaxIdentifier
+import models.values.UniqueReference
 import org.scalacheck.Gen
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
@@ -38,7 +39,6 @@ import uk.gov.hmrc.http.HttpResponse
 
 import java.security.SecureRandom
 import java.time.Clock
-import models.values.UniqueReference
 
 class TestMessagesControllerSpec
     extends AnyFlatSpec
@@ -67,7 +67,7 @@ class TestMessagesControllerSpec
     )
   )
 
-  val messageRecipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+  val messageRecipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
   val simulatedResponse = SimulatedResponse(
     TaxIdentifier("GB12345678900"),
