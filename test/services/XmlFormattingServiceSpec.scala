@@ -27,8 +27,9 @@ import models.errors.XmlError
 import models.values.CurrencyCode
 import models.values.ErrorType
 import models.values.GuaranteeReference
-import models.values.MessageRecipient
+import models.values.MessageIdRecipient
 import models.values.TaxIdentifier
+import models.values.UniqueReference
 import org.scalatest.StreamlinedXmlEquality
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -38,13 +39,12 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Random
 import scala.xml.Utility
-import models.values.UniqueReference
 
 class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with StreamlinedXmlEquality {
   val dateTime = LocalDateTime.of(2021, 9, 7, 15, 53, 16).toInstant(ZoneOffset.UTC)
   def service  = new XmlFormattingService(Clock.fixed(dateTime, ZoneOffset.UTC), new Random(0))
 
-  val recipient = MessageRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
+  val recipient = MessageIdRecipient("MDTP-GUA-22b9899e24ee48e6a18997d1")
 
   "XmlFormattingService" should "format successful response with correct guarantee type for guarantee reference with voucher code" in {
     val simulatedResponse = SimulatedResponse(

@@ -18,9 +18,9 @@ package models
 
 import models.values.GuaranteeReference
 import models.values.TaxIdentifier
+import models.values.UniqueReference
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
-import models.values.UniqueReference
 
 case class SimulatedResponse(
   taxIdentifier: TaxIdentifier,

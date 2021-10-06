@@ -54,7 +54,7 @@ class TraderRouterConnectorImpl @Inject() (
 
     val headers = Seq(
       HeaderNames.CONTENT_TYPE -> MimeTypes.XML,
-      "X-Message-Recipient"    -> recipient.value,
+      "X-Message-Recipient"    -> recipient.messageIdValue,
       "X-Message-Type"         -> messageType.code
     )
 

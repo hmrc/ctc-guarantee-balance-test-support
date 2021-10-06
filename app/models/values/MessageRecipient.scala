@@ -16,12 +16,49 @@
 
 package models.values
 
-import play.api.libs.json.Format
-import play.api.libs.json.Json
+import play.api.Logging
+import play.api.mvc.PathBindable
 
-case class MessageRecipient(value: String) extends AnyVal
+import java.util.UUID
 
-object MessageRecipient {
-  implicit val messageRecipientFormat: Format[MessageRecipient] =
-    Json.valueFormat[MessageRecipient]
+sealed abstract class MessageRecipient extends Product with Serializable {
+  def messageIdValue: String = this match {
+    case MessageIdRecipient(value) =>
+      value
+    case BalanceIdRecipient(uuid) =>
+      "MDTP-GUA-" + uuid.toString.replaceAll("-", "").take(24)
+  }
+}
+
+case class MessageIdRecipient(value: String) extends MessageRecipient
+
+case class BalanceIdRecipient(value: UUID) extends MessageRecipient
+
+object MessageRecipient extends Logging {
+  val MessageIdRegex = """MDTP-GUA-[0-9a-fA-F]{24}""".r
+
+  implicit val messageIdentifierRecipientPathBindable: PathBindable[MessageIdRecipient] =
+    PathBindable.bindableString.transform(MessageIdRecipient.apply, _.value)
+
+  implicit val balanceIdRecipientPathBindable: PathBindable[BalanceIdRecipient] =
+    PathBindable.bindableUUID.transform(BalanceIdRecipient.apply, _.value)
+
+  implicit val messageRecipientPathBindable: PathBindable[MessageRecipient] =
+    new PathBindable[MessageRecipient] {
+      override def bind(key: String, value: String): Either[String, MessageRecipient] =
+        value match {
+          case MessageIdRegex() =>
+            messageIdentifierRecipientPathBindable.bind(key, value)
+          case _ =>
+            balanceIdRecipientPathBindable.bind(key, value)
+        }
+
+      override def unbind(key: String, value: MessageRecipient): String =
+        value match {
+          case balanceId @ BalanceIdRecipient(_) =>
+            balanceIdRecipientPathBindable.unbind(key, balanceId)
+          case messageId @ MessageIdRecipient(_) =>
+            messageIdentifierRecipientPathBindable.unbind(key, messageId)
+        }
+    }
 }

@@ -75,7 +75,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
       <SynIdeMES1>UNOC</SynIdeMES1>
       <SynVerNumMES2>3</SynVerNumMES2>
       <MesSenMES3>NTA.GB</MesSenMES3>
-      <MesRecMES6>{recipient.value}</MesRecMES6>
+      <MesRecMES6>{recipient.messageIdValue}</MesRecMES6>
       <DatOfPreMES9>{dateFormatter.format(dateTime)}</DatOfPreMES9>
       <TimOfPreMES10>{timeFormatter.format(dateTime)}</TimOfPreMES10>
       <IntConRefMES11>{uniqueRef}</IntConRefMES11>
@@ -116,7 +116,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
       <SynIdeMES1>UNOC</SynIdeMES1>
       <SynVerNumMES2>3</SynVerNumMES2>
       <MesSenMES3>NTA.GB</MesSenMES3>
-      <MesRecMES6>{recipient.value}</MesRecMES6>
+      <MesRecMES6>{recipient.messageIdValue}</MesRecMES6>
       <DatOfPreMES9>{dateFormatter.format(dateTime)}</DatOfPreMES9>
       <TimOfPreMES10>{timeFormatter.format(dateTime)}</TimOfPreMES10>
       <IntConRefMES11>{uniqueRef}</IntConRefMES11>
@@ -146,7 +146,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
       <SynIdeMES1>UNOC</SynIdeMES1>
       <SynVerNumMES2>3</SynVerNumMES2>
       <MesSenMES3>NTA.GB</MesSenMES3>
-      <MesRecMES6>{recipient.value}</MesRecMES6>
+      <MesRecMES6>{recipient.messageIdValue}</MesRecMES6>
       <DatOfPreMES9>{dateFormatter.format(dateTime)}</DatOfPreMES9>
       <TimOfPreMES10>{timeFormatter.format(dateTime)}</TimOfPreMES10>
       <IntConRefMES11>{uniqueRef}</IntConRefMES11>
