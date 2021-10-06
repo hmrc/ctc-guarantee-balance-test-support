@@ -50,7 +50,7 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
     val simulatedResponse = SimulatedResponse(
       TaxIdentifier("GB12345678900"),
       GuaranteeReference("05DE3300BE0001067A001017"),
-      UniqueReference("7acb933dbe7039"),
+      Some(UniqueReference("abc123def456gh")),
       BalanceRequestSuccess(BigDecimal("12345678.90"), CurrencyCode("GBP"))
     )
 
@@ -99,7 +99,7 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
     val simulatedResponse = SimulatedResponse(
       TaxIdentifier("GB12345678900"),
       GuaranteeReference("20GB0000010000GX1"),
-      UniqueReference("7acb933dbe7039"),
+      Some(UniqueReference("abc123def456gh")),
       BalanceRequestSuccess(BigDecimal("12345678.90"), CurrencyCode("GBP"))
     )
 
@@ -144,11 +144,11 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
       .unsafeToFuture()
   }
 
-  it should "format functional error response" in {
+  it should "format functional error response with original message reference" in {
     val simulatedResponse = SimulatedResponse(
       TaxIdentifier("GB12345678900"),
       GuaranteeReference("20GB0000010000GX1"),
-      UniqueReference("7acb933dbe7039"),
+      Some(UniqueReference("abc123def456gh")),
       BalanceRequestFunctionalError(
         NonEmptyList.one(
           FunctionalError(ErrorType(12), "Foo.Bar(1).Baz", Some("Invalid something or other"))
@@ -167,7 +167,7 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
         <IntConRefMES11>60b420bb3851d9</IntConRefMES11>
         <MesIdeMES19>60b420bb3851d9</MesIdeMES19>
         <MesTypMES20>GB906A</MesTypMES20>
-        <OriMesIdeMES22>{simulatedResponse.originalMessageReference.value}</OriMesIdeMES22>
+        <OriMesIdeMES22>abc123def456gh</OriMesIdeMES22>
         <FUNERRER1>
           <ErrTypER11>12</ErrTypER11>
           <ErrPoiER12>Foo.Bar(1).Baz</ErrPoiER12>
@@ -182,11 +182,49 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
       .unsafeToFuture()
   }
 
-  it should "format XML error response" in {
+  it should "format functional error response without original message reference" in {
     val simulatedResponse = SimulatedResponse(
       TaxIdentifier("GB12345678900"),
       GuaranteeReference("20GB0000010000GX1"),
-      UniqueReference("7acb933dbe7039"),
+      None,
+      BalanceRequestFunctionalError(
+        NonEmptyList.one(
+          FunctionalError(ErrorType(12), "Foo.Bar(1).Baz", Some("Invalid something or other"))
+        )
+      )
+    )
+
+    val errorXml = {
+      <CD906A>
+        <SynIdeMES1>UNOC</SynIdeMES1>
+        <SynVerNumMES2>3</SynVerNumMES2>
+        <MesSenMES3>NTA.GB</MesSenMES3>
+        <MesRecMES6>MDTP-GUA-22b9899e24ee48e6a18997d1</MesRecMES6>
+        <DatOfPreMES9>20210907</DatOfPreMES9>
+        <TimOfPreMES10>1553</TimOfPreMES10>
+        <IntConRefMES11>60b420bb3851d9</IntConRefMES11>
+        <MesIdeMES19>60b420bb3851d9</MesIdeMES19>
+        <MesTypMES20>GB906A</MesTypMES20>
+        <OriMesIdeMES22>7acb933dbe7039</OriMesIdeMES22>
+        <FUNERRER1>
+          <ErrTypER11>12</ErrTypER11>
+          <ErrPoiER12>Foo.Bar(1).Baz</ErrPoiER12>
+          <ErrReaER13>Invalid something or other</ErrReaER13>
+        </FUNERRER1>
+      </CD906A>
+    }
+
+    service
+      .formatMessage(recipient, simulatedResponse)
+      .map { xml => Utility.trim(xml).toString shouldBe Utility.trim(errorXml).toString }
+      .unsafeToFuture()
+  }
+
+  it should "format XML error response with original message reference" in {
+    val simulatedResponse = SimulatedResponse(
+      TaxIdentifier("GB12345678900"),
+      GuaranteeReference("20GB0000010000GX1"),
+      Some(UniqueReference("abc123def456gh")),
       BalanceRequestXmlError(
         NonEmptyList.one(XmlError(ErrorType(12), "Foo.Bar(1).Baz", None))
       )
@@ -204,7 +242,44 @@ class XmlFormattingServiceSpec extends AsyncFlatSpec with Matchers with Streamli
         <MesIdeMES19>60b420bb3851d9</MesIdeMES19>
         <MesTypMES20>GB917A</MesTypMES20>
         <HEAHEA>
-          <OriMesIdeMES22>{simulatedResponse.originalMessageReference.value}</OriMesIdeMES22>
+          <OriMesIdeMES22>abc123def456gh</OriMesIdeMES22>
+        </HEAHEA>
+        <FUNERRER1>
+          <ErrTypER11>12</ErrTypER11>
+          <ErrPoiER12>Foo.Bar(1).Baz</ErrPoiER12>
+        </FUNERRER1>
+      </CC917A>
+    }
+
+    service
+      .formatMessage(recipient, simulatedResponse)
+      .map { xml => Utility.trim(xml).toString shouldBe Utility.trim(errorXml).toString }
+      .unsafeToFuture()
+  }
+
+  it should "format XML error response without original message reference" in {
+    val simulatedResponse = SimulatedResponse(
+      TaxIdentifier("GB12345678900"),
+      GuaranteeReference("20GB0000010000GX1"),
+      None,
+      BalanceRequestXmlError(
+        NonEmptyList.one(XmlError(ErrorType(12), "Foo.Bar(1).Baz", None))
+      )
+    )
+
+    val errorXml = {
+      <CC917A>
+        <SynIdeMES1>UNOC</SynIdeMES1>
+        <SynVerNumMES2>3</SynVerNumMES2>
+        <MesSenMES3>NTA.GB</MesSenMES3>
+        <MesRecMES6>MDTP-GUA-22b9899e24ee48e6a18997d1</MesRecMES6>
+        <DatOfPreMES9>20210907</DatOfPreMES9>
+        <TimOfPreMES10>1553</TimOfPreMES10>
+        <IntConRefMES11>60b420bb3851d9</IntConRefMES11>
+        <MesIdeMES19>60b420bb3851d9</MesIdeMES19>
+        <MesTypMES20>GB917A</MesTypMES20>
+        <HEAHEA>
+          <OriMesIdeMES22>7acb933dbe7039</OriMesIdeMES22>
         </HEAHEA>
         <FUNERRER1>
           <ErrTypER11>12</ErrTypER11>
