@@ -38,14 +38,7 @@ object MessageRecipient extends Logging {
   val MessageIdRegex = """MDTP-GUA-[0-9a-fA-F]{24}""".r
 
   implicit val messageIdentifierRecipientPathBindable: PathBindable[MessageIdRecipient] =
-    new PathBindable.Parsing[MessageIdRecipient](
-      MessageIdRecipient.apply,
-      _.value,
-      (key, exc) => {
-        logger.warn("Unable to parse message identifier value", exc)
-        s"Cannot parse parameter $key as a message identifier value"
-      }
-    )
+    PathBindable.bindableString.transform(MessageIdRecipient.apply, _.value)
 
   implicit val balanceIdRecipientPathBindable: PathBindable[BalanceIdRecipient] =
     PathBindable.bindableUUID.transform(BalanceIdRecipient.apply, _.value)
