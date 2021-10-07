@@ -72,7 +72,7 @@ class TestMessagesControllerSpec
   val simulatedResponse = SimulatedResponse(
     TaxIdentifier("GB12345678900"),
     GuaranteeReference("05DE3300BE0001067A001017"),
-    UniqueReference("7acb933dbe7039"),
+    Some(UniqueReference("7acb933dbe7039")),
     BalanceRequestSuccess(BigDecimal("12345678.90"), CurrencyCode("GBP"))
   )
 

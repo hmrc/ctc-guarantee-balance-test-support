@@ -24,6 +24,7 @@ import models.SimulatedResponse
 import models.values.GuaranteeReference
 import models.values.MessageRecipient
 import models.values.TaxIdentifier
+import models.values.UniqueReference
 
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -107,6 +108,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
 
   private def formatFunctionalErrorMessage(
     recipient: MessageRecipient,
+    originalMessageRef: Option[UniqueReference],
     errorResponse: BalanceRequestFunctionalError
   ): Elem = {
     val uniqueRef = newUniqueReference()
@@ -122,7 +124,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
       <IntConRefMES11>{uniqueRef}</IntConRefMES11>
       <MesIdeMES19>{uniqueRef}</MesIdeMES19>
       <MesTypMES20>GB906A</MesTypMES20>
-      <OriMesIdeMES22>{newUniqueReference()}</OriMesIdeMES22>
+      <OriMesIdeMES22>{originalMessageRef.map(_.value).getOrElse(newUniqueReference())}</OriMesIdeMES22>
       {
       errorResponse.errors.toList.map { err =>
         <FUNERRER1>
@@ -137,6 +139,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
 
   private def formatXmlErrorMessage(
     recipient: MessageRecipient,
+    originalMessageRef: Option[UniqueReference],
     errorResponse: BalanceRequestXmlError
   ): Elem = {
     val uniqueRef = newUniqueReference()
@@ -153,7 +156,7 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
       <MesIdeMES19>{uniqueRef}</MesIdeMES19>
       <MesTypMES20>GB917A</MesTypMES20>
       <HEAHEA>
-        <OriMesIdeMES22>{newUniqueReference()}</OriMesIdeMES22>
+        <OriMesIdeMES22>{originalMessageRef.map(_.value).getOrElse(newUniqueReference())}</OriMesIdeMES22>
       </HEAHEA>
       {
       errorResponse.errors.toList.map { err =>
@@ -173,9 +176,17 @@ class XmlFormattingService @Inject() (clock: Clock, random: Random) {
   ): IO[Elem] = IO.blocking {
     simulatedResponse.response match {
       case error @ BalanceRequestXmlError(_) =>
-        formatXmlErrorMessage(recipient, error)
+        formatXmlErrorMessage(
+          recipient,
+          simulatedResponse.originalMessageReference,
+          error
+        )
       case error @ BalanceRequestFunctionalError(_) =>
-        formatFunctionalErrorMessage(recipient, error)
+        formatFunctionalErrorMessage(
+          recipient,
+          simulatedResponse.originalMessageReference,
+          error
+        )
       case success @ BalanceRequestSuccess(_, _) =>
         formatSuccessMessage(
           recipient,

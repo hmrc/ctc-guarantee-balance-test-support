@@ -25,7 +25,7 @@ import play.api.libs.json.OFormat
 case class SimulatedResponse(
   taxIdentifier: TaxIdentifier,
   guaranteeReference: GuaranteeReference,
-  originalMessageReference: UniqueReference,
+  originalMessageReference: Option[UniqueReference],
   response: BalanceRequestResponse
 )
 
