@@ -20,6 +20,16 @@ uses:
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
+
+traits:
+  contentHeader:
+    headers:
+      Content-Type:
+        description: Specifies the format of the request body, which must be either JSON or XML.
+        type: string
+        required: true
+        example: application/json
+
 /test/customs/guarantees/balances/{balanceId}:
   uriParameters:
     balanceId:
@@ -31,7 +41,7 @@ uses:
   post:
     displayName: Trigger a Balance Request Response
     is:
-      - headers.contentHeader
+      - contentHeader
     (annotations.scope): "common-transit-convention-guarantee-balance-test-support"
     securedBy: [ sec.oauth_2_0: { scopes: [ "common-transit-convention-guarantee-balance-test-support" ] } ]
     body:
@@ -47,6 +57,41 @@ uses:
                 "currency": "EUR"
             }
           }
+      application/xml:
+        example: |
+          <CD037A>
+            <SynIdeMES1>UNOC</SynIdeMES1>
+            <SynVerNumMES2>3</SynVerNumMES2>
+            <MesSenMES3>NTA.GB</MesSenMES3>
+            <MesRecMES6>MDTP-GUA-22b9899e24ee48e6a18997d1</MesRecMES6>
+            <DatOfPreMES9>20210806</DatOfPreMES9>
+            <TimOfPreMES10>1505</TimOfPreMES10>
+            <IntConRefMES11>deadbeefcafeba</IntConRefMES11>
+            <MesIdeMES19>deadbeefcafeba</MesIdeMES19>
+            <MesTypMES20>GB037A</MesTypMES20>
+            <TRAPRIRC1>
+              <TINRC159>GB12345678900</TINRC159>
+            </TRAPRIRC1>
+            <CUSTOFFGUARNT>
+              <RefNumRNT1>GB000001</RefNumRNT1>
+            </CUSTOFFGUARNT>
+            <GUAREF2>
+              <GuaRefNumGRNREF21>21GB3300BE0001067A001017</GuaRefNumGRNREF21>
+              <AccDatREF24>20210114</AccDatREF24>
+              <GuaTypREF22>4</GuaTypREF22>
+              <GuaMonCodREF23>1</GuaMonCodREF23>
+              <GUAQUE>
+                <QueIdeQUE1>2</QueIdeQUE1>
+              </GUAQUE>
+              <EXPEXP>
+                <ExpEXP1>2751.95</ExpEXP1>
+                <ExpCouEXP2>2448</ExpCouEXP2>
+                <BalEXP3>1212211848.45</BalEXP3>
+                <CurEXP4>GBP</CurEXP4>
+              </EXPEXP>
+            </GUAREF2>
+          </CD037A>
+
     responses:
       200:
       400:
