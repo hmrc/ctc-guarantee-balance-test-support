@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "#/simulated-balance-response-schema.json",
+    "description": "A simulated response from the guarantee management system",
+    "type": "object",
+    "required": [
+        "taxIdentifier",
+        "guaranteeReference",
+        "response"
+    ],
+    "properties": {
+        "taxIdentifier": {
+            "type": "string",
+            "description": "The tax identifier of the holder of the guarantee"
+        },
+        "guaranteeReference": {
+            "type": "string",
+            "description": "The guarantee reference number (GRN) of the guarantee"
+        },
+        "originalMessageReference": {
+            "type": "string",
+            "description": "The unique reference of the original balance query (IE034) message"
+        },
+        "response": {
+            "type": "object",
+            "description": "The response from the guarantee management system"
+        }
+    }
+}
