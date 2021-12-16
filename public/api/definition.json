@@ -1,11 +1,4 @@
 {
-  "scopes": [
-    {
-      "key": "common-transit-convention-guarantee-balance-test-support",
-      "name": "Common Transit Convention Guarantee Balance Test Support",
-      "description": "Common Transit Convention Guarantee Balance Test Support API"
-    }
-  ],
   "api": {
     "name": "Common Transit Convention Guarantee Balance Test Support",
     "description": "The test support API to allow traders to trigger responses to Common Transit Convention guarantee balance enquiries",
@@ -17,7 +10,7 @@
         "status": "BETA",
         "endpointsEnabled": true,
         "access": {
-          "type": "PRIVATE"
+          "type": "PUBLIC"
         }
       }
     ]
