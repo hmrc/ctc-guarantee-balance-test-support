@@ -7,7 +7,7 @@
     }
   ],
   "api": {
-    "name": "Common Transit Convention Guarantee Balance Test Support",
+    "name": "CTC Guarantee Balance Test Support",
     "description": "The test support API to allow traders to trigger responses to Common Transit Convention guarantee balance enquiries",
     "context": "test/customs/guarantees",
     "categories": ["CUSTOMS"],
