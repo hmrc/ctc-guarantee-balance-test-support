@@ -1,2 +1,5 @@
 # microservice specific routes
 POST    /balances/:recipient    controllers.TestMessagesController.injectEisResponse(recipient: MessageRecipient)
+
+GET     /api/definition   controllers.Assets.at(path="/public/api", file="definition.json")
+GET     /api/conf/*file   controllers.Assets.at(path="/public/api/conf", file)
