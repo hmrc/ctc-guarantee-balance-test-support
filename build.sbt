@@ -19,7 +19,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(scoverageSettings)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.12.14",
+    scalaVersion := "2.13.12",
     PlayKeys.playDefaultPort := 10209,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
