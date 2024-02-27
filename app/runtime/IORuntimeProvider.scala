@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,12 @@
 
 package runtime
 
-import akka.actor.ActorSystem
-import cats.effect.unsafe.IORuntime
-import cats.effect.unsafe.IORuntimeConfig
+import cats.effect.unsafe.{IORuntime, IORuntimeConfig}
+import org.apache.pekko.actor.ActorSystem
 import play.api.inject.ApplicationLifecycle
 
-import javax.inject.Inject
-import javax.inject.Provider
-import javax.inject.Singleton
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import javax.inject.{Inject, Provider, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IORuntimeProvider @Inject() (lifecycle: ApplicationLifecycle, system: ActorSystem)(implicit
